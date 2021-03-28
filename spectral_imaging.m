@@ -1,22 +1,29 @@
 hcube = hypercube("croped.img", "croped.hdr")
-ListOfWavelengths = hcube.Wavelength;
 
+% Stores the wavelengths and the datacube in variables
+ListOfWavelengths = hcube.Wavelength;
 datacube = hcube.DataCube;
 
+% Make three spectrum arrays, one for each part of the image
 spectrum1 = zeros(186,1);
 spectrum2 = zeros(186,1);
 spectrum3 = zeros(186,1);
 
 
-
+% for loop which iterates from 1 to the number of bands in the
+% hyperspectral image
 for i = 1:186
+   % Find the reflectance of five random pixels in the left part of the image,
+   % then find the average reflactance of those five pixels
    pixel1 = datacube(250, 125, i);
    pixel2 = datacube(200, 100, i);
    pixel3 = datacube(300, 50, i);
    pixel4 = datacube(400, 200, i);
    pixel5 = datacube(100, 230, i);
+   % Store the average reflectance in the spectrum1 array
    spectrum1(i,1) = (pixel1+pixel2+pixel3+pixel4+pixel5)/5;
    
+   % Same as above, but with the top right part of the image
    pixel1 = datacube(100, 400, i);
    pixel2 = datacube(50, 450, i);
    pixel3 = datacube(150, 350, i);
@@ -24,6 +31,7 @@ for i = 1:186
    pixel5 = datacube(100, 270, i);
    spectrum2(i,1) = (pixel1+pixel2+pixel3+pixel4+pixel5)/5;
    
+   % Same as above, but with the bottom right part of the image
    pixel1 = datacube(450, 450, i);
    pixel2 = datacube(400, 400, i);
    pixel3 = datacube(350, 350, i);
@@ -32,9 +40,11 @@ for i = 1:186
    spectrum3(i,1) = (pixel1+pixel2+pixel3+pixel4+pixel5)/5;
 end
 
+% Make three empty 500x500 matrices.
 classification1 = zeros(500);
 classification2 = zeros(500);
 classification3 = zeros(500);
+% two foor loops, to go through each pixel in the image
 for i = 1:500
    for j = 1:500      
        TargetTimesReferenceSum1 = 0;
@@ -47,6 +57,7 @@ for i = 1:500
        TargetSquaredSum3 = 0;
        
        ReferenceSquaredSum = 0;
+       % This loop finds the values used in the SAM formula
        for k=1:186
            TargetTimesReferenceSum1 = TargetTimesReferenceSum1 + (spectrum1(k, 1) * datacube(i, j, k));
            TargetSquaredSum1 = TargetSquaredSum1 + (spectrum1(k,1)^2);
@@ -59,6 +70,9 @@ for i = 1:500
            
            ReferenceSquaredSum = ReferenceSquaredSum + (datacube(i,j,k)^2);
        end
+       % The SAM formula returns an angle, and if the angle is less than
+       % 0.07 radians (4 degrees) the current pixel is given a white color.
+       % This is done for all three spectrums
        if acos(TargetTimesReferenceSum1/(TargetSquaredSum1^(1/2)*ReferenceSquaredSum^(1/2))) < 0.07
        classification1(i,j) = 250;
        end
@@ -70,9 +84,11 @@ for i = 1:500
        end
    end
 end
+% Makes the 500x500 matrices into gray scale images.
 image1 = mat2gray(classification1);
 image2 = mat2gray(classification2);
 image3 = mat2gray(classification3);
+
 figure
 imshow(image1)
 
