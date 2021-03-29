@@ -45,8 +45,11 @@ classification1 = zeros(500);
 classification2 = zeros(500);
 classification3 = zeros(500);
 % two foor loops, to go through each pixel in the image
+
+thresholdangle = 0.07;
+
 for i = 1:500
-   for j = 1:500      
+   for j = 1:500
        TargetTimesReferenceSum1 = 0;
        TargetSquaredSum1 = 0;
        
@@ -73,13 +76,13 @@ for i = 1:500
        % The SAM formula returns an angle, and if the angle is less than
        % 0.07 radians (4 degrees) the current pixel is given a white color.
        % This is done for all three spectrums
-       if acos(TargetTimesReferenceSum1/(TargetSquaredSum1^(1/2)*ReferenceSquaredSum^(1/2))) < 0.07
+       if acos(TargetTimesReferenceSum1/(TargetSquaredSum1^(1/2)*ReferenceSquaredSum^(1/2))) < thresholdangle
        classification1(i,j) = 250;
        end
-       if acos(TargetTimesReferenceSum2/(TargetSquaredSum2^(1/2)*ReferenceSquaredSum^(1/2))) < 0.07
+       if acos(TargetTimesReferenceSum2/(TargetSquaredSum2^(1/2)*ReferenceSquaredSum^(1/2))) < thresholdangle
        classification2(i,j) = 250;
        end
-       if acos(TargetTimesReferenceSum3/(TargetSquaredSum3^(1/2)*ReferenceSquaredSum^(1/2))) < 0.07
+       if acos(TargetTimesReferenceSum3/(TargetSquaredSum3^(1/2)*ReferenceSquaredSum^(1/2))) < thresholdangle
        classification3(i,j) = 250;
        end
    end
