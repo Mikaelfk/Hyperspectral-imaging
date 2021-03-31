@@ -18,8 +18,8 @@ for i = 1:186
    pixel1 = datacube(250, 125, i);
    pixel2 = datacube(200, 100, i);
    pixel3 = datacube(300, 50, i);
-   pixel4 = datacube(400, 200, i);
-   pixel5 = datacube(100, 230, i);
+   pixel4 = datacube(378, 144, i);
+   pixel5 = datacube(80, 200, i);
    % Store the average reflectance in the spectrum1 array
    spectrum1(i,1) = (pixel1+pixel2+pixel3+pixel4+pixel5)/5;
    
@@ -46,43 +46,43 @@ classification2 = zeros(500);
 classification3 = zeros(500);
 % two foor loops, to go through each pixel in the image
 
-thresholdangle = 0.07;
+thresholdangle = 0.01;
 
 for i = 1:500
    for j = 1:500
        TargetTimesReferenceSum1 = 0;
-       TargetSquaredSum1 = 0;
+       ReferenceSquaredSum1 = 0;
        
        TargetTimesReferenceSum2 = 0;
-       TargetSquaredSum2 = 0;
+       ReferenceSquaredSum2 = 0;
        
        TargetTimesReferenceSum3 = 0;
-       TargetSquaredSum3 = 0;
+       ReferenceSquaredSum3 = 0;
        
-       ReferenceSquaredSum = 0;
+       TargetSquaredSum = 0;
        % This loop finds the values used in the SAM formula
        for k=1:186
            TargetTimesReferenceSum1 = TargetTimesReferenceSum1 + (spectrum1(k, 1) * datacube(i, j, k));
-           TargetSquaredSum1 = TargetSquaredSum1 + (spectrum1(k,1)^2);
+           ReferenceSquaredSum1 = ReferenceSquaredSum1 + (spectrum1(k,1)^2);
            
            TargetTimesReferenceSum2 = TargetTimesReferenceSum2 + (spectrum2(k, 1) * datacube(i, j, k));
-           TargetSquaredSum2 = TargetSquaredSum2 + (spectrum2(k,1)^2);
+           ReferenceSquaredSum2 = ReferenceSquaredSum2 + (spectrum2(k,1)^2);
            
            TargetTimesReferenceSum3 = TargetTimesReferenceSum3 + (spectrum3(k, 1) * datacube(i, j, k));
-           TargetSquaredSum3 = TargetSquaredSum3 + (spectrum3(k,1)^2);
+           ReferenceSquaredSum3 = ReferenceSquaredSum3 + (spectrum3(k,1)^2);
            
-           ReferenceSquaredSum = ReferenceSquaredSum + (datacube(i,j,k)^2);
+           TargetSquaredSum = TargetSquaredSum + (datacube(i,j,k)^2);
        end
        % The SAM formula returns an angle, and if the angle is less than
        % 0.07 radians (4 degrees) the current pixel is given a white color.
        % This is done for all three spectrums
-       if acos(TargetTimesReferenceSum1/(TargetSquaredSum1^(1/2)*ReferenceSquaredSum^(1/2))) < thresholdangle
+       if acos(TargetTimesReferenceSum1/(TargetSquaredSum^(1/2)*ReferenceSquaredSum1^(1/2))) < thresholdangle
        classification1(i,j) = 250;
        end
-       if acos(TargetTimesReferenceSum2/(TargetSquaredSum2^(1/2)*ReferenceSquaredSum^(1/2))) < thresholdangle
+       if acos(TargetTimesReferenceSum2/(TargetSquaredSum^(1/2)*ReferenceSquaredSum2^(1/2))) < thresholdangle
        classification2(i,j) = 250;
        end
-       if acos(TargetTimesReferenceSum3/(TargetSquaredSum3^(1/2)*ReferenceSquaredSum^(1/2))) < thresholdangle
+       if acos(TargetTimesReferenceSum3/(TargetSquaredSum^(1/2)*ReferenceSquaredSum3^(1/2))) < thresholdangle
        classification3(i,j) = 250;
        end
    end
