@@ -46,7 +46,7 @@ classification2 = zeros(500);
 classification3 = zeros(500);
 % two foor loops, to go through each pixel in the image
 
-thresholdangle = 0.01;
+thresholdangle = 0.07;
 
 for i = 1:500
    for j = 1:500
